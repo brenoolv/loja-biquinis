@@ -1,0 +1,35 @@
+.topo {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--mar);
+  text-decoration: none;
+}
+
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.menu a {
+  color: var(--tinta);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 0;
+}
+
+.menu a:hover {
+  color: var(--mar);
+  text-decoration: underline;
+}

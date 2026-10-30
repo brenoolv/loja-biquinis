@@ -1,0 +1,26 @@
+:root {
+  --fundo: #fbf6ec;
+  --areia: #efe3cf;
+  --agua: #2ec4d6;
+  --agua-clara: #a8e6e8;
+  --mar: #0b4f5c;
+  --tinta:#0a2f38;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--tinta);
+  font-family: system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}

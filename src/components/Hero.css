@@ -1,0 +1,64 @@
+.hero {
+  background: linear-gradient(
+    180deg,
+    var(--agua) 0%,
+    var(--agua-clara) 55%,
+    var(--areia) 100%
+  );
+  padding: 96px 24px 120px;
+}
+
+.hero-conteudo {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-etiqueta {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mar);
+}
+
+.hero h1 {
+  margin: 0 0 24px;
+  max-width: 14ch;
+  font-size: clamp(40px, 8vw, 80px);
+  line-height: 1.02;
+  color: var(--tinta);
+}
+
+.hero-texto {
+  margin: 0 0 32px;
+  max-width: 480px;
+}
+
+.hero-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.botao {
+  display: inline-block;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.botao-principal {
+  background: var(--mar);
+  color: #ffffff;
+}
+
+.botao-contorno {
+  border: 2px solid var(--mar);
+  color: var(--mar);
+}
+
+.botao:hover {
+  opacity: 0.85;
+}
