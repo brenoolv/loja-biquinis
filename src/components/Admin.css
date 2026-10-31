@@ -160,6 +160,18 @@
   flex-wrap: wrap;
 }
 
+/* Aviso de cupom usado de novo */
+.admin-alerta {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-left: 4px solid #d97706;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 .admin-cliente {
   display: flex;
   flex-wrap: wrap;
