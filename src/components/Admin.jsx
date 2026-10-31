@@ -35,14 +35,15 @@ const FILTROS = {
 
 export default function Admin() {
   const [usuario, setUsuario] = useState(null);
-  const [ehAdmin, setEhAdmin] = useState(false);
-  const [carregando, setCarregando] = useState(true);
+  const [sessaoPronta, setSessaoPronta] = useState(false);
+  // Resposta do banco: { id da conta, se é admin }. Fica null até o banco responder.
+  const [conferencia, setConferencia] = useState(null);
 
   // Mesmo esquema do App: descobre quem está logado e fica ouvindo
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUsuario(data.session?.user ?? null);
-      if (!data.session) setCarregando(false);
+      setSessaoPronta(true);
     });
 
     const { data } = supabase.auth.onAuthStateChange((_evento, sessao) => {
@@ -52,22 +53,20 @@ export default function Admin() {
     return () => data.subscription.unsubscribe();
   }, []);
 
-  // Sempre que muda a conta, pergunta ao banco se ela é admin
+  // Sempre que muda a conta, pergunta ao banco se ela é admin.
+  // O estado só muda quando o banco responde (dentro do .then).
   useEffect(() => {
-    if (!usuario) {
-      setEhAdmin(false);
-      return;
-    }
+    if (!usuario) return;
 
-    async function conferir() {
-      setCarregando(true);
-      const { data, error } = await supabase.rpc("eh_admin");
-      setEhAdmin(!error && data === true);
-      setCarregando(false);
-    }
-
-    conferir();
+    supabase.rpc("eh_admin").then(({ data, error }) => {
+      setConferencia({ id: usuario.id, ehAdmin: !error && data === true });
+    });
   }, [usuario]);
+
+  // Calculados a cada render, a partir do estado
+  const respostaDaConta = usuario && conferencia?.id === usuario.id;
+  const ehAdmin = Boolean(respostaDaConta && conferencia.ehAdmin);
+  const carregando = !sessaoPronta || (usuario && !respostaDaConta);
 
   if (carregando) {
     return <p className="admin-centro">Carregando...</p>;
@@ -215,39 +214,55 @@ function PainelPedidos() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  async function buscar() {
-    setCarregando(true);
-    setErro("");
+  // Cada vez que "versao" muda, o efeito busca tudo de novo no banco.
+  // Atualizar e os botões dos pedidos só aumentam esse número.
+  const [versao, setVersao] = useState(0);
 
-    // As duas buscas ao mesmo tempo
-    const [resPedidos, resPerfis] = await Promise.all([
+  useEffect(() => {
+    let ativo = true; // vira false se o painel fechar antes do banco responder
+
+    Promise.all([
       supabase
         .from("pedidos")
         .select("*")
         .order("criado_em", { ascending: false })
         .limit(300),
       supabase.from("perfis").select("id, nome, telefone, email"),
-    ]);
+    ]).then(([resPedidos, resPerfis]) => {
+      if (!ativo) return;
 
-    if (resPedidos.error) {
-      console.error(resPedidos.error);
-      setErro("Não foi possível carregar os pedidos.");
-    } else {
-      setPedidos(resPedidos.data);
-    }
+      if (resPedidos.error) {
+        console.error(resPedidos.error);
+        setErro("Não foi possível carregar os pedidos.");
+      } else {
+        setErro("");
+        setPedidos(resPedidos.data);
+      }
 
-    if (!resPerfis.error) {
-      const mapa = {};
-      for (const perfil of resPerfis.data) mapa[perfil.id] = perfil;
-      setClientes(mapa);
-    }
+      if (!resPerfis.error) {
+        const mapa = {};
+        for (const perfil of resPerfis.data) mapa[perfil.id] = perfil;
+        setClientes(mapa);
+      }
 
-    setCarregando(false);
+      setCarregando(false);
+    });
+
+    return () => {
+      ativo = false;
+    };
+  }, [versao]);
+
+  // Busca de novo sem mostrar o "Carregando..." (depois de mudar um pedido)
+  function recarregar() {
+    setVersao((v) => v + 1);
   }
 
-  useEffect(() => {
-    buscar();
-  }, []);
+  // Botão Atualizar: mostra o "Carregando..." e busca de novo
+  function atualizar() {
+    setCarregando(true);
+    recarregar();
+  }
 
   const visiveis = pedidos.filter((p) =>
     FILTROS[filtro].status.includes(p.status),
@@ -271,7 +286,7 @@ function PainelPedidos() {
             </button>
           );
         })}
-        <button type="button" className="admin-atualizar" onClick={buscar}>
+        <button type="button" className="admin-atualizar" onClick={atualizar}>
           Atualizar
         </button>
       </div>
@@ -289,7 +304,7 @@ function PainelPedidos() {
             pedido={pedido}
             cliente={pedido.cliente_id ? clientes[pedido.cliente_id] : null}
             cupomRepetido={cupomUsadoAntes(pedido, pedidos, clientes)}
-            onMudou={buscar}
+            onMudou={recarregar}
           />
         ))}
       </ul>
