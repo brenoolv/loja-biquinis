@@ -1,21 +1,45 @@
 .faixa {
+  display: block;
+  width: 100%;
+  border: none;
+  margin: 0;
   background: var(--mar);
   color: #ffffff;
   overflow: hidden;
   padding: 10px 0;
+  font: inherit;
   font-size: 15px;
   font-weight: 600;
+  cursor: pointer;
+  text-align: center;
 }
 
 .faixa-trilho {
   display: flex;
   width: max-content;
-  animation: deslizar 30s linear infinite;
+  /* Quanto maior o tempo, mais devagar a faixa anda */
+  animation: deslizar 60s linear infinite;
+}
+
+/* No computador, a faixa para quando o mouse passa por cima */
+.faixa:hover .faixa-trilho {
+  animation-play-state: paused;
 }
 
 .faixa-trilho span {
   padding: 0 32px;
   white-space: nowrap;
+}
+
+/* Versão parada: só aparece pra quem desliga animações no celular */
+.faixa-parada {
+  display: none;
+  padding: 0 16px;
+}
+
+.faixa-aviso {
+  display: block;
+  padding: 0 16px;
 }
 
 @keyframes deslizar {
@@ -24,5 +48,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .faixa-trilho { animation: none; }
+  .faixa-trilho { display: none; }
+  .faixa-parada { display: block; }
 }

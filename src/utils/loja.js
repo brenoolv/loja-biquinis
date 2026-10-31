@@ -11,6 +11,12 @@ export const DOCUMENTO = "CPF 038.159.523-44";
 export const CIDADE = "Fortaleza, CE";
 export const EMAIL_LOJA = "oceamar.loja@gmail.com";
 
+// Crédito de quem fez o site (aparece no fim do rodapé).
+// Coloque um link (Instagram, WhatsApp ou portfólio) em CREDITO_LINK,
+// ou deixe "" pra mostrar só o nome.
+export const CREDITO_NOME = "github.com/brenoolv";
+export const CREDITO_LINK = "https://github.com/brenoolv";
+
 // Endereço do site no ar. A InfinitePay avisa os pagamentos aprovados aqui.
 // Quando o oceamar.com.br estiver funcionando, troque por ele.
 export const SITE_URL = "https://oceamar.netlify.app";

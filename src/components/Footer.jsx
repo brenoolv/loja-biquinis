@@ -1,5 +1,13 @@
 import "./Footer.css";
-import { WHATSAPP, VENDEDORA, DOCUMENTO, CIDADE, EMAIL_LOJA } from "../utils/loja";
+import {
+  WHATSAPP,
+  VENDEDORA,
+  DOCUMENTO,
+  CIDADE,
+  EMAIL_LOJA,
+  CREDITO_NOME,
+  CREDITO_LINK,
+} from "../utils/loja";
 
 export default function Footer() {
   const ano = new Date().getFullYear();
@@ -59,6 +67,16 @@ export default function Footer() {
           {VENDEDORA} · {DOCUMENTO} · {CIDADE} · {EMAIL_LOJA}
         </p>
         <p>Emoji animado: Noto Emoji, Google (CC BY 4.0)</p>
+        <p className="rodape-credito">
+          Site feito por{" "}
+          {CREDITO_LINK ? (
+            <a href={CREDITO_LINK} target="_blank" rel="noreferrer">
+              {CREDITO_NOME}
+            </a>
+          ) : (
+            CREDITO_NOME
+          )}
+        </p>
       </div>
     </footer>
   );

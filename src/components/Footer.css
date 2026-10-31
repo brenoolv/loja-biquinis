@@ -77,3 +77,12 @@
   font-size: 12px;
   opacity: 0.75;
 }
+
+.rodape-credito {
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.rodape-credito a {
+  text-decoration: underline;
+}
