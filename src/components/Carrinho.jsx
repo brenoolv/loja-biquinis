@@ -12,6 +12,22 @@ import { criarLinkPagamento, guardarUltimoPedido } from "../utils/pagamento";
 import OpcoesFrete from "./OpcoesFrete";
 import { supabase } from "../utils/supabase";
 
+// "88999990000" -> "(88) 99999-0000", enquanto a cliente digita
+function formatarTelefone(numeros) {
+  if (numeros.length <= 2) return numeros;
+  if (numeros.length <= 7) return `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+  return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+}
+
+// Lê o nome e o WhatsApp que a cliente já digitou numa compra anterior
+function lerDadosSalvos() {
+  try {
+    return JSON.parse(localStorage.getItem("dadosCliente")) ?? {};
+  } catch {
+    return {};
+  }
+}
+
 const formasPagamento = {
   pix: "Pix",
   cartao: "Cartão",
@@ -44,6 +60,20 @@ export default function Carrinho({
   const [cupomDigitado, setCupomDigitado] = useState("");
   const [cupomAplicado, setCupomAplicado] = useState(false);
   const [erroCupom, setErroCupom] = useState("");
+
+  // Só pra quem compra sem conta. Começa com o que ficou salvo no aparelho.
+  const [nomeCliente, setNomeCliente] = useState(() => lerDadosSalvos().nome ?? "");
+  const [telefoneCliente, setTelefoneCliente] = useState(
+    () => lerDadosSalvos().telefone ?? "",
+  );
+
+  // Toda vez que ela digita, guarda no aparelho pra próxima compra
+  useEffect(() => {
+    localStorage.setItem(
+      "dadosCliente",
+      JSON.stringify({ nome: nomeCliente, telefone: telefoneCliente }),
+    );
+  }, [nomeCliente, telefoneCliente]);
 
   useEffect(() => {
     function aoVoltar(evento) {
@@ -100,6 +130,13 @@ export default function Carrinho({
   const podeFinalizar =
     recebimento === "retirada" ||
     (enderecoCep !== null && numero.trim() !== "" && opcaoFrete !== null);
+
+  // Quem tem conta já tem nome e telefone no perfil.
+  // Quem não tem precisa preencher: nome e WhatsApp com DDD (10 ou 11 números).
+  const dadosOk =
+    Boolean(usuario) ||
+    (nomeCliente.trim().length >= 2 &&
+      (telefoneCliente.length === 10 || telefoneCliente.length === 11));
 
   let motivoBloqueio = "";
   if (recebimento === "entrega") {
@@ -208,6 +245,10 @@ export default function Carrinho({
     }
   }
 
+  function mudarTelefone(evento) {
+    setTelefoneCliente(evento.target.value.replace(/\D/g, "").slice(0, 11));
+  }
+
   // ---------- Mensagem do WhatsApp ----------
 
   const textoFrete =
@@ -223,6 +264,7 @@ export default function Carrinho({
       // Em cima e em maiúsculo pra você ver na hora quem usou o cupom
       cupomAplicado ? `*PEDIDO COM CUPOM ${CUPOM}*` : null,
       "Olá! Quero fazer este pedido:",
+      !usuario && nomeCliente.trim() ? `Nome: ${nomeCliente.trim()}` : null,
       numeroPedido ? `Pedido nº ${numeroPedido}` : null,
       "",
       ...linhasItens,
@@ -259,6 +301,11 @@ export default function Carrinho({
     const { error } = await supabase.from("pedidos").insert({
       numero: numeroPedido,
       cliente_id: usuario?.id ?? null,
+      // Pra Agatha saber de quem é o pedido, mesmo sem conta
+      nome_cliente: usuario ? usuario.user_metadata?.nome ?? null : nomeCliente.trim(),
+      telefone_cliente: usuario
+        ? usuario.user_metadata?.telefone ?? null
+        : telefoneCliente,
       itens: itens.map((item) => ({
         produto_id: item.id,
         nome: item.nome,
@@ -510,7 +557,7 @@ export default function Carrinho({
                 {erroCupom && <p className="carrinho-erro">{erroCupom}</p>}
               </section>
 
-              {/* ---- Conta (opcional) ---- */}
+              {/* ---- Seus dados ---- */}
               <section className="carrinho-secao">
                 {usuario ? (
                   <p className="carrinho-conta">
@@ -519,12 +566,39 @@ export default function Carrinho({
                     Este pedido vai aparecer em Meus pedidos.
                   </p>
                 ) : (
-                  <p className="carrinho-conta">
-                    Quer acompanhar este pedido depois?{" "}
-                    <button type="button" onClick={onAbrirConta}>
-                      Entre ou crie sua conta
-                    </button>
-                  </p>
+                  <>
+                    <h3 className="carrinho-secao-titulo">Seus dados</h3>
+                    <div className="carrinho-dados">
+                      <label>
+                        Nome
+                        <input
+                          type="text"
+                          autoComplete="name"
+                          placeholder="Seu nome"
+                          value={nomeCliente}
+                          onChange={(e) => setNomeCliente(e.target.value)}
+                        />
+                      </label>
+                      <label>
+                        WhatsApp
+                        <input
+                          type="tel"
+                          inputMode="numeric"
+                          autoComplete="tel-national"
+                          placeholder="(85) 99999-0000"
+                          value={formatarTelefone(telefoneCliente)}
+                          onChange={mudarTelefone}
+                        />
+                      </label>
+                    </div>
+                    <p className="carrinho-conta">
+                      Já tem conta?{" "}
+                      <button type="button" onClick={onAbrirConta}>
+                        Entre aqui
+                      </button>{" "}
+                      e acompanhe o pedido em Meus pedidos.
+                    </p>
+                  </>
                 )}
               </section>
 
@@ -569,7 +643,14 @@ export default function Carrinho({
               )}
 
               {/* Só aparece quando dá pra pagar, pra não ocupar espaço no celular */}
-              {mostrarPagarAgora && podeFinalizar && (
+              {/* Sem nome e WhatsApp, o pagamento online fica escondido */}
+              {mostrarPagarAgora && podeFinalizar && !dadosOk && (
+                <p className="carrinho-falta">
+                  Preencha seu nome e WhatsApp pra pagar online
+                </p>
+              )}
+
+              {mostrarPagarAgora && podeFinalizar && dadosOk && (
                 <button
                   type="button"
                   className="carrinho-pagar"

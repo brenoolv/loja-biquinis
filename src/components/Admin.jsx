@@ -164,6 +164,13 @@ function Painel({ usuario }) {
 // ---------- Pedidos ----------
 
 // "(85) 99999-0000" -> "5585999990000", pra montar o link do WhatsApp
+// "88999990000" -> "(88) 99999-0000"
+function formatarTelefone(telefone) {
+  const n = telefone.replace(/\D/g, "");
+  if (n.length < 10) return telefone;
+  return `(${n.slice(0, 2)}) ${n.slice(2, n.length - 4)}-${n.slice(-4)}`;
+}
+
 function linkWhatsApp(telefone) {
   let numeros = (telefone ?? "").replace(/\D/g, "");
   if (numeros.length === 10 || numeros.length === 11) numeros = `55${numeros}`;
@@ -267,7 +274,8 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
     minute: "2-digit",
   });
   const frete = pedido.frete === null ? null : Number(pedido.frete);
-  const whatsapp = linkWhatsApp(cliente?.telefone);
+  // Telefone do perfil; se não tiver conta, o que ela digitou no carrinho
+  const whatsapp = linkWhatsApp(cliente?.telefone || pedido.telefone_cliente);
 
   // Roda uma ação no banco e recarrega a lista
   async function executar(acao) {
@@ -344,6 +352,14 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
             <strong>{cliente.nome || "Sem nome"}</strong>
             <span>{cliente.email}</span>
             {cliente.telefone && <span>{cliente.telefone}</span>}
+          </>
+        ) : pedido.nome_cliente || pedido.telefone_cliente ? (
+          <>
+            <strong>{pedido.nome_cliente || "Sem nome"}</strong>
+            {pedido.telefone_cliente && (
+              <span>{formatarTelefone(pedido.telefone_cliente)}</span>
+            )}
+            <span className="admin-sem-conta">Comprou sem conta</span>
           </>
         ) : (
           <span className="admin-sem-conta">Comprou sem conta</span>
