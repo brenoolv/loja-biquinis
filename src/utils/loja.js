@@ -19,7 +19,7 @@ export const CREDITO_LINK = "https://github.com/brenoolv";
 
 // Endereço do site no ar. A InfinitePay avisa os pagamentos aprovados aqui.
 // Quando o oceamar.com.br estiver funcionando, troque por ele.
-export const SITE_URL = "https://oceamar.netlify.app";
+export const SITE_URL = "https://oceamar.com.br";
 
 // InfiniteTag da InfinitePay (é pública, pode ficar no código)
 export const INFINITE_TAG = "oceamar";
