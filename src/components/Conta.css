@@ -1,0 +1,376 @@
+/* Mesma gaveta do carrinho, abrindo da direita */
+
+.conta-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 52; /* acima do carrinho: dá pra abrir a conta de dentro dele */
+  background: rgba(10, 47, 56, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.conta-fundo.aberto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.conta {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 53;
+  width: min(420px, 100%);
+  height: 100%;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--fundo);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.conta.aberto {
+  transform: translateX(0);
+  box-shadow: -8px 0 32px rgba(10, 47, 56, 0.2);
+}
+
+.conta-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--areia);
+}
+
+.conta-topo h2 {
+  margin: 0;
+  font-family: var(--cursiva);
+  font-size: 28px;
+  color: var(--mar);
+}
+
+.conta-fechar {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.conta-conteudo {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.conta-secao {
+  padding: 16px 20px;
+  border-bottom: 6px solid var(--areia);
+}
+
+.conta-secao:last-child {
+  border-bottom: none;
+}
+
+.conta-titulo {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: var(--mar);
+}
+
+.conta-explica {
+  margin: 12px 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Abas Entrar / Criar conta (mesmo visual das abas do carrinho) */
+.conta-abas {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--areia);
+}
+
+.conta-abas button {
+  flex: 1;
+  padding: 9px 6px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.conta-abas button.ativa {
+  background: #ffffff;
+  color: var(--mar);
+  box-shadow: 0 1px 4px rgba(10, 47, 56, 0.12);
+}
+
+.conta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.conta-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 16px: o iPhone não dá zoom ao tocar no campo */
+.conta-form input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1.5px solid var(--areia);
+  border-radius: 12px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.conta-form input:focus {
+  border-color: var(--mar);
+  outline: none;
+}
+
+.conta-botao {
+  margin-top: 4px;
+  padding: 13px;
+  border: none;
+  border-radius: 999px;
+  background: var(--mar);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.conta-botao:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.conta-erro {
+  margin: 0;
+  color: #b3261e;
+  font-size: 14px;
+}
+
+.conta-ola {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.conta-ola p {
+  margin: 0;
+}
+
+.conta-sair {
+  padding: 8px 14px;
+  border: 1.5px solid var(--mar);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ---------- Meus pedidos ---------- */
+
+.conta-pedidos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conta-pedido {
+  border: 1.5px solid var(--areia);
+  border-radius: 12px;
+  background: #ffffff;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.conta-pedido.aberto {
+  border-color: var(--mar);
+}
+
+/* O resumo é um botão, mas sem cara de botão */
+.conta-pedido-resumo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.conta-pedido-topo,
+.conta-pedido-fim {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.conta-status {
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--areia);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.conta-status--pago,
+.conta-status--enviado,
+.conta-status--entregue {
+  background: #e6f6f1;
+  color: #1a7a52;
+}
+
+.conta-status--cancelado {
+  background: #fbe9e7;
+  color: #b3261e;
+}
+
+.conta-pedido-itens {
+  font-size: 14px;
+}
+
+.conta-pedido-fim > span {
+  color: var(--mar);
+  font-weight: 600;
+}
+
+.conta-pedido-fim strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--mar);
+}
+
+.conta-seta {
+  transition: transform 0.2s;
+}
+
+.conta-pedido.aberto .conta-seta {
+  transform: rotate(180deg);
+}
+
+/* ---------- Detalhes ---------- */
+
+.conta-detalhes {
+  padding: 4px 14px 14px;
+  border-top: 1px solid var(--areia);
+  font-size: 14px;
+}
+
+.conta-detalhes-numero {
+  margin: 10px 0 6px;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.conta-detalhes-itens {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conta-detalhes-itens li,
+.conta-detalhes-contas p {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 4px;
+}
+
+.conta-detalhes-contas {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--areia);
+}
+
+.conta-detalhes-total {
+  margin-top: 6px !important;
+  font-size: 15px;
+}
+
+.conta-detalhes-info {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.conta-detalhes-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.conta-detalhes-pagar,
+.conta-detalhes-whatsapp,
+.conta-detalhes-loja {
+  display: block;
+  width: 100%;
+  padding: 11px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.conta-detalhes-pagar {
+  border: none;
+  background: var(--mar);
+  color: #ffffff;
+}
+
+.conta-detalhes-pagar:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.conta-detalhes-whatsapp {
+  border: none;
+  background: #25d366;
+  color: #ffffff;
+}
+
+.conta-detalhes-loja {
+  border: 1.5px solid var(--mar);
+  background: transparent;
+  color: var(--mar);
+}

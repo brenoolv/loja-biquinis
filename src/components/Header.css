@@ -1,25 +1,31 @@
 .topo {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px 24px;
+  position: relative;
+  padding: 16px max(24px, calc((100% - 1200px) / 2));
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  background: var(--fundo);
+  box-shadow: 0 1px 0 var(--areia);
 }
 
 .logo {
-  font-size: 26px;
-  font-weight: 800;
+  font-family: var(--cursiva);
+  font-size: 32px;
+  font-weight: 700;
   color: var(--mar);
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .menu {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
+  margin-inline: auto; /* menu no meio, conta e sacola na direita */
 }
 
 .menu a {
@@ -32,4 +38,196 @@
 .menu a:hover {
   color: var(--mar);
   text-decoration: underline;
+}
+
+.logo-onda {
+  width: 44px;
+  height: auto;
+  animation: balancar 3s ease-in-out infinite;
+}
+
+@keyframes balancar {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+/* Ícone da conta: ao lado da sacola */
+.botao-conta {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-right: -12px; /* encosta na sacola */
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.botao-conta:hover {
+  background: var(--areia);
+}
+
+/* Bolinha verde quando a cliente está logada */
+.botao-conta.logada::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--fundo);
+  border-radius: 999px;
+  background: #1f9d6a;
+}
+
+.botao-carrinho {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  cursor: pointer;
+}
+
+.botao-carrinho svg {
+  width: 32px;
+  height: 32px;
+}
+
+.botao-carrinho:hover {
+  background: var(--areia);
+}
+
+.carrinho-contador {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--mar);
+  color: #ffffff;
+  font-family: system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+  animation: pular 0.4s ease;
+}
+
+@keyframes pular {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Botão de menu: só aparece no celular */
+.botao-menu {
+  display: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .topo {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .botao-menu {
+    display: grid;
+    place-items: center;
+  }
+
+  /* O logo fica no meio, entre o menu e a sacola */
+  .logo {
+    margin-right: auto;
+  }
+
+  /* Escondido até tocar no botão; abre como uma gaveta embaixo do topo */
+  .menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 20px 16px;
+    background: var(--fundo);
+    box-shadow: 0 12px 24px rgba(10, 47, 56, 0.12);
+  }
+
+  .menu.aberto {
+    display: flex;
+  }
+
+  .menu a {
+    padding: 14px 0;
+    font-size: 18px;
+    border-bottom: 1px solid var(--areia);
+  }
+
+  .menu a:last-child {
+    border-bottom: none;
+  }
+
+  .logo {
+    font-size: 26px;
+  }
+
+  .logo-onda {
+    width: 34px;
+  }
+
+  .botao-conta {
+    width: 44px;
+    height: 44px;
+    margin-right: 0;
+    font-size: 24px;
+  }
+
+  .botao-carrinho {
+    width: 44px;
+    height: 44px;
+  }
+
+  .botao-carrinho svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Celular bem estreito: tira a ondinha do logo pra caber tudo */
+@media (max-width: 370px) {
+  .logo-onda {
+    display: none;
+  }
 }

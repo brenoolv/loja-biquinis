@@ -5,6 +5,7 @@
   --agua-clara: #a8e6e8;
   --mar: #0b4f5c;
   --tinta:#0a2f38;
+  --cursiva: "Dancing Script", cursive;
 }
 
 * {
@@ -16,11 +17,21 @@ body {
   background: var(--fundo);
   color: var(--tinta);
   font-family: system-ui, sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.5;
+  /* Corta qualquer coisa que passe da largura da tela, pra página nunca
+     arrastar pro lado no celular. "clip" (e não "hidden") pra não
+     quebrar o topo fixo (position: sticky). */
+  overflow-x: clip;
 }
 
 img {
   max-width: 100%;
   display: block;
+}
+
+.topo-fixo {
+  position: sticky;
+  top: 0;
+  z-index: 40;
 }

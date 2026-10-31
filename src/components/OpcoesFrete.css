@@ -1,0 +1,81 @@
+.frete {
+  margin: 16px 0 0;
+  padding: 0;
+  border: none;
+}
+
+.frete-titulo {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.frete-opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 14px;
+  border: 1.5px solid var(--areia);
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.frete-opcao--marcada {
+  border-color: var(--mar);
+  background: #f1f9fa;
+}
+
+.frete-opcao--indisponivel {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.frete-opcao input {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--mar);
+  flex-shrink: 0;
+}
+
+.frete-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.frete-nome {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.frete-detalhe {
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.frete-preco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.frete-preco s {
+  font-size: 12px;
+  opacity: 0.5;
+}
+
+.frete-preco strong {
+  color: var(--mar);
+}
+
+.frete-aviso {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.75;
+}

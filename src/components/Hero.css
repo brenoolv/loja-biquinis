@@ -1,31 +1,37 @@
 .hero {
-  background: linear-gradient(
-    180deg,
-    var(--agua) 0%,
-    var(--agua-clara) 55%,
-    var(--areia) 100%
-  );
-  padding: 96px 24px 120px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(251, 246, 236, 0.85) 0%,
+      rgba(251, 246, 236, 0.4) 50%,
+      rgba(251, 246, 236, 0) 100%
+    ),
+    url("/fotos/praia.jpg") center 85% / cover no-repeat;
+  font-family: var(--cursiva);
+  padding: 64px 24px 80px;
+  overflow-x: hidden;
 }
 
 .hero-conteudo {
   max-width: 1200px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
 }
 
 .hero-etiqueta {
   margin: 0 0 16px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--mar);
 }
 
 .hero h1 {
   margin: 0 0 24px;
   max-width: 14ch;
-  font-size: clamp(40px, 8vw, 80px);
+  font-size: clamp(36px, 6vw, 60px);
   line-height: 1.02;
   color: var(--tinta);
 }
@@ -33,6 +39,8 @@
 .hero-texto {
   margin: 0 0 32px;
   max-width: 480px;
+  font-size: 20px;
+  font-family: system-ui, sans-serif;
 }
 
 .hero-botoes {
@@ -46,6 +54,8 @@
   padding: 14px 28px;
   border-radius: 999px;
   font-weight: 600;
+  font-size: 18px;
+  font-family: system-ui, sans-serif;
   text-decoration: none;
 }
 
@@ -61,4 +71,24 @@
 
 .botao:hover {
   opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+  .hero {
+    background:
+      linear-gradient(rgba(251, 246, 236, 0.75), rgba(251, 246, 236, 0.75)),
+      url("/fotos/praia.jpg") center / cover no-repeat;
+  }
+
+  .hero-conteudo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sol {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.15em;
+  vertical-align: middle;
 }

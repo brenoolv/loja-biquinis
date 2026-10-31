@@ -1,0 +1,431 @@
+/* ---------- Gaveta ---------- */
+
+.carrinho-fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(10, 47, 56, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.carrinho-fundo.aberto {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.carrinho {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 51;
+  width: min(420px, 100%);
+  height: 100%;
+  height: 100dvh; /* no celular, desconta a barra do navegador */
+  display: flex;
+  flex-direction: column;
+  background: var(--fundo);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.carrinho.aberto {
+  transform: translateX(0);
+  box-shadow: -8px 0 32px rgba(10, 47, 56, 0.2);
+}
+
+.carrinho-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--areia);
+}
+
+.carrinho-topo h2 {
+  margin: 0;
+  font-family: var(--cursiva);
+  font-size: 28px;
+  color: var(--mar);
+}
+
+.carrinho-fechar {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.carrinho-fechar:hover {
+  background: var(--areia);
+}
+
+.carrinho-vazio {
+  flex: 1;
+  margin: 0;
+  padding: 24px 20px;
+}
+
+/* Só esta parte rola; o topo e o rodapé ficam parados */
+.carrinho-conteudo {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ---------- Seções ---------- */
+
+.carrinho-secao {
+  padding: 16px 20px;
+  border-bottom: 6px solid var(--areia);
+}
+
+.carrinho-secao:last-child {
+  border-bottom: none;
+}
+
+.carrinho-secao-titulo {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: var(--mar);
+}
+
+/* ---------- Itens ---------- */
+
+.carrinho-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carrinho-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.carrinho-item + .carrinho-item {
+  border-top: 1px solid var(--areia);
+}
+
+.carrinho-item img {
+  width: 56px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.carrinho-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.carrinho-item-info p {
+  margin: 0;
+}
+
+.carrinho-item-nome {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.carrinho-item-detalhe {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.carrinho-item-preco {
+  margin-top: 2px;
+  font-weight: 600;
+  color: var(--mar);
+}
+
+.carrinho-remover {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.carrinho-remover:hover {
+  background: var(--areia);
+}
+
+/* ---------- Abas (Entrega/Retirada e Pagamento) ---------- */
+
+.carrinho-abas {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--areia);
+}
+
+.carrinho-abas label {
+  position: relative;
+  flex: 1;
+  padding: 9px 6px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.carrinho-abas label.ativa {
+  background: #ffffff;
+  color: var(--mar);
+  box-shadow: 0 1px 4px rgba(10, 47, 56, 0.12);
+}
+
+/* O radio continua existindo (teclado e leitor de tela usam), só fica invisível */
+.carrinho-abas input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- Endereço ---------- */
+
+.carrinho-endereco {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Só os campos de CEP, número e complemento (não as opções de frete) */
+.carrinho-cep label,
+.carrinho-endereco-linha label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 16px evita o iPhone dar zoom quando a cliente toca no campo */
+.carrinho-endereco input[type="text"],
+.carrinho-cupom input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1.5px solid var(--areia);
+  border-radius: 12px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.carrinho-endereco input[type="text"]:focus,
+.carrinho-cupom input:focus {
+  border-color: var(--mar);
+  outline: none;
+}
+
+/* CEP e botão lado a lado, alinhados embaixo */
+.carrinho-cep {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.carrinho-cep label {
+  flex: 1;
+}
+
+.carrinho-cep button {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--mar);
+  color: #ffffff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.carrinho-cep button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.carrinho-endereco-achado {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--areia);
+  font-size: 14px;
+}
+
+.carrinho-endereco-linha {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 8px;
+}
+
+/* ---------- Cupom ---------- */
+
+.carrinho-cupom {
+  display: flex;
+  gap: 8px;
+}
+
+.carrinho-cupom input {
+  text-transform: uppercase;
+}
+
+.carrinho-cupom button {
+  padding: 0 18px;
+  border: none;
+  border-radius: 12px;
+  background: var(--mar);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.carrinho-cupom-aplicado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #e6f6f1;
+  font-size: 14px;
+}
+
+.carrinho-cupom-aplicado button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--mar);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Conta ---------- */
+
+.carrinho-conta {
+  margin: 0;
+  font-size: 14px;
+}
+
+.carrinho-conta button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--mar);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- Resumo ---------- */
+
+.carrinho-linha {
+  display: flex;
+  justify-content: space-between;
+}
+
+.carrinho-resumo .carrinho-linha {
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+
+.carrinho-desconto {
+  color: var(--mar);
+  font-weight: 600;
+}
+
+.carrinho-aviso {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.carrinho-erro {
+  margin: 8px 0 0;
+  color: #b3261e;
+  font-size: 14px;
+}
+
+/* ---------- Rodapé fixo ---------- */
+
+.carrinho-fim {
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--areia);
+  background: var(--fundo);
+  box-shadow: 0 -6px 16px rgba(10, 47, 56, 0.06);
+}
+
+.carrinho-total {
+  align-items: baseline;
+  font-size: 19px;
+}
+
+.carrinho-falta {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--mar);
+  opacity: 0.8;
+}
+
+.carrinho-pagar,
+.carrinho-finalizar {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.carrinho-pagar {
+  background: var(--mar);
+  color: #ffffff;
+}
+
+.carrinho-finalizar {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.carrinho-pagar:hover,
+.carrinho-finalizar:hover {
+  opacity: 0.9;
+}
+
+.carrinho-pagar:disabled,
+.carrinho-finalizar:disabled {
+  background: rgba(11, 79, 92, 0.3);
+  cursor: not-allowed;
+}

@@ -1,0 +1,28 @@
+.faixa {
+  background: var(--mar);
+  color: #ffffff;
+  overflow: hidden;
+  padding: 10px 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.faixa-trilho {
+  display: flex;
+  width: max-content;
+  animation: deslizar 30s linear infinite;
+}
+
+.faixa-trilho span {
+  padding: 0 32px;
+  white-space: nowrap;
+}
+
+@keyframes deslizar {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faixa-trilho { animation: none; }
+}
