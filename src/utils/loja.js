@@ -4,6 +4,10 @@ export const WHATSAPP = "558894649311";
 export const CUPOM = "BEMVINDA10";
 export const DESCONTO = 0.1; // 10%
 
+// Endereço do site no ar. A InfinitePay avisa os pagamentos aprovados aqui.
+// Quando o oceamar.com.br estiver funcionando, troque por ele.
+export const SITE_URL = "https://oceamar.netlify.app";
+
 // InfiniteTag da InfinitePay (é pública, pode ficar no código)
 export const INFINITE_TAG = "oceamar";
 

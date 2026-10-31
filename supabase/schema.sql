@@ -131,7 +131,11 @@ declare
   v_pedido public.pedidos;
   v_item jsonb;
 begin
-  if not (public.eh_admin() or coalesce(auth.jwt() ->> 'role', '') = 'service_role') then
+  if not (
+    public.eh_admin()
+    or coalesce(auth.jwt() ->> 'role', '') = 'service_role'
+    or current_setting('role', true) = 'service_role'
+  ) then
     raise exception 'sem permissão';
   end if;
 

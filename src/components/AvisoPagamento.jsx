@@ -28,6 +28,23 @@ export function lerRetornoPagamento() {
   };
 }
 
+// Avisa a função do Netlify, como garantia caso o aviso da InfinitePay atrase.
+// A função confere o pagamento com a InfinitePay antes de marcar como pago.
+function avisarServidor(retorno) {
+  fetch("/.netlify/functions/pagamento-confirmado", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      order_nsu: retorno.orderNsu,
+      transaction_nsu: retorno.transactionNsu,
+      slug: retorno.slug,
+      receipt_url: retorno.comprovante,
+    }),
+  }).catch(() => {
+    // no npm run dev essa função não existe; tudo bem
+  });
+}
+
 export default function AvisoPagamento({ retorno, onConfirmado, onFechar }) {
   // "verificando" -> "confirmado" ou "sem-confirmacao"
   const [situacao, setSituacao] = useState("verificando");
@@ -56,6 +73,7 @@ export default function AvisoPagamento({ retorno, onConfirmado, onFechar }) {
         if (pago || retorno.comprovante) {
           setSituacao("confirmado");
           marcarPedidoPagoNoAparelho(retorno.orderNsu);
+          avisarServidor(retorno);
           onConfirmado();
         } else {
           setSituacao("sem-confirmacao");
@@ -65,6 +83,7 @@ export default function AvisoPagamento({ retorno, onConfirmado, onFechar }) {
         if (retorno.comprovante) {
           setSituacao("confirmado");
           marcarPedidoPagoNoAparelho(retorno.orderNsu);
+          avisarServidor(retorno);
           onConfirmado();
         } else {
           setSituacao("sem-confirmacao");

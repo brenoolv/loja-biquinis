@@ -1,4 +1,4 @@
-import { INFINITE_TAG } from "./loja";
+import { INFINITE_TAG, SITE_URL } from "./loja";
 
 // Cria o link de pagamento da InfinitePay e devolve o endereço pra onde
 // mandar a cliente. Usado pelo carrinho e pelo "Pagar agora" de Meus pedidos.
@@ -18,6 +18,8 @@ export async function criarLinkPagamento({
   const pedido = {
     handle: INFINITE_TAG,
     redirect_url: `${window.location.origin}/?pagamento=concluido`,
+    // A InfinitePay chama esta função do Netlify quando o pagamento é aprovado
+    webhook_url: `${SITE_URL}/.netlify/functions/pagamento-confirmado`,
     order_nsu: numero,
     // O desconto é espalhado proporcionalmente no preço de cada peça
     items: itens.map((item) => ({
