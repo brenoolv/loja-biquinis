@@ -374,3 +374,53 @@
   background: transparent;
   color: var(--mar);
 }
+
+/* ---------- Esqueci a senha, termos, excluir ---------- */
+
+.conta-link {
+  padding: 4px;
+  border: none;
+  background: transparent;
+  color: var(--mar);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.conta-aviso {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #e6f6f1;
+  font-size: 14px;
+}
+
+.conta-termos {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.conta-termos a {
+  color: var(--mar);
+  font-weight: 600;
+}
+
+.conta-detalhes-excluir {
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: #b3261e;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.conta-detalhes-excluir:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

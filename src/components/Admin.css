@@ -1,0 +1,318 @@
+.admin {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 16px 48px;
+}
+
+.admin-centro {
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.admin-entrar {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 40px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-entrar h1,
+.admin-topo h1 {
+  margin: 0;
+  font-family: var(--cursiva);
+  font-size: 34px;
+  color: var(--mar);
+}
+
+.admin-entrar .conta-secao {
+  padding: 0;
+  border: none;
+}
+
+.admin-link {
+  color: var(--mar);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Topo ---------- */
+
+.admin-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-topo p {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.admin-topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-sair {
+  padding: 8px 14px;
+  border: 1.5px solid var(--mar);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-abas {
+  max-width: 360px;
+  margin-bottom: 16px;
+}
+
+/* ---------- Filtros ---------- */
+
+.admin-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.admin-filtros button {
+  padding: 7px 12px;
+  border: 1.5px solid var(--areia);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--tinta);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-filtros button.ativo {
+  border-color: var(--mar);
+  background: var(--mar);
+  color: #ffffff;
+}
+
+.admin-filtros .admin-atualizar {
+  margin-left: auto;
+  color: var(--mar);
+}
+
+.admin-vazio,
+.admin-dica {
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+/* ---------- Pedido ---------- */
+
+.admin-pedidos,
+.admin-estoque {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-pedido {
+  padding: 14px;
+  border: 1.5px solid var(--areia);
+  border-left-width: 5px;
+  border-radius: 12px;
+  background: #ffffff;
+  font-size: 14px;
+}
+
+.admin-pedido--pago {
+  border-left-color: #1f9d6a;
+}
+
+.admin-pedido--aguardando_pagamento,
+.admin-pedido--combinar_whatsapp {
+  border-left-color: #e0a526;
+}
+
+.admin-pedido--enviado {
+  border-left-color: var(--agua);
+}
+
+.admin-pedido--cancelado {
+  opacity: 0.7;
+}
+
+.admin-pedido-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-cliente {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 10px 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--fundo);
+}
+
+.admin-sem-conta {
+  opacity: 0.7;
+}
+
+.admin-zap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-itens {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-itens li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-valores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--areia);
+}
+
+.admin-valores strong {
+  margin-left: auto;
+  color: var(--mar);
+}
+
+.admin-info {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.admin-info a {
+  color: var(--mar);
+}
+
+/* ---------- Botões de ação ---------- */
+
+.admin-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.admin-acoes button,
+.admin-estoque button {
+  padding: 9px 14px;
+  border: 1.5px solid var(--mar);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mar);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-acoes button.principal,
+.admin-estoque button.principal {
+  background: var(--mar);
+  color: #ffffff;
+}
+
+.admin-acoes button.perigo {
+  border-color: #b3261e;
+  color: #b3261e;
+}
+
+.admin-acoes button:disabled,
+.admin-estoque button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ---------- Estoque ---------- */
+
+.admin-estoque li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px solid var(--areia);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.admin-estoque-nome {
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-estoque-nome span {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.admin-estoque-tamanhos {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-estoque-tamanhos label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* 16px: o iPhone não dá zoom ao tocar */
+.admin-estoque-tamanhos input {
+  width: 56px;
+  padding: 8px 4px;
+  border: 1.5px solid var(--areia);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 16px;
+  text-align: center;
+}
+
+.admin-estoque-tamanhos input:focus {
+  border-color: var(--mar);
+  outline: none;
+}

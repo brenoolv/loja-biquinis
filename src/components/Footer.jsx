@@ -1,4 +1,5 @@
 import "./Footer.css";
+import { WHATSAPP } from "../utils/loja";
 
 export default function Footer() {
   const ano = new Date().getFullYear();
@@ -34,11 +35,12 @@ export default function Footer() {
           <h3>Navegue</h3>
           <a href="#inicio">Início</a>
           <a href="#colecao">Coleção</a>
+          <a href="/privacidade">Política de Privacidade</a>
         </nav>
 
         <div className="rodape-coluna">
           <h3>Contato</h3>
-          <a href="https://wa.me/558894649311" target="_blank" rel="noreferrer">
+          <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer">
             WhatsApp
           </a>
           <a

@@ -3,13 +3,21 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import Links from './components/Links.jsx'
+import Admin from './components/Admin.jsx'
+import Privacidade from './components/Privacidade.jsx'
 
-// Se o endereço for oceamar.com.br/links, mostra a página de links.
-// Em qualquer outro endereço, mostra a loja.
-const paginaDeLinks = window.location.pathname === '/links'
+// Cada endereço mostra uma tela. Qualquer outro endereço mostra a loja.
+//   /links       -> página da bio do Instagram
+//   /admin       -> painel da dona
+//   /privacidade -> política de privacidade
+const paginas = {
+  '/links': <Links />,
+  '/admin': <Admin />,
+  '/privacidade': <Privacidade />,
+}
+
+const pagina = paginas[window.location.pathname] ?? <App />
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    {paginaDeLinks ? <Links /> : <App />}
-  </StrictMode>,
+  <StrictMode>{pagina}</StrictMode>,
 )

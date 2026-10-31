@@ -35,7 +35,16 @@ function traduzirErro(mensagem = "") {
   return "Não deu certo. Tente de novo em instantes.";
 }
 
-export default function Conta({ aberto, onFechar, usuario }) {
+export default function Conta({
+  aberto,
+  onFechar,
+  usuario,
+  recuperandoSenha,
+  onSenhaTrocada,
+}) {
+  let titulo = usuario ? "Minha conta" : "Entrar";
+  if (recuperandoSenha) titulo = "Nova senha";
+
   return (
     <>
       <div
@@ -45,7 +54,7 @@ export default function Conta({ aberto, onFechar, usuario }) {
 
       <aside className={aberto ? "conta aberto" : "conta"} inert={!aberto}>
         <div className="conta-topo">
-          <h2>{usuario ? "Minha conta" : "Entrar"}</h2>
+          <h2>{titulo}</h2>
           <button
             type="button"
             className="conta-fechar"
@@ -57,7 +66,9 @@ export default function Conta({ aberto, onFechar, usuario }) {
         </div>
 
         <div className="conta-conteudo">
-          {usuario ? (
+          {recuperandoSenha ? (
+            <NovaSenha onPronto={onSenhaTrocada} />
+          ) : usuario ? (
             <AreaDaCliente usuario={usuario} aberto={aberto} onFechar={onFechar} />
           ) : (
             <EntrarOuCadastrar />
@@ -69,70 +80,97 @@ export default function Conta({ aberto, onFechar, usuario }) {
 }
 
 // ---------- Quem ainda não entrou ----------
+// "export" porque o painel da dona (/admin) usa o mesmo formulário.
 
-function EntrarOuCadastrar() {
-  const [modo, setModo] = useState("entrar"); // "entrar" ou "cadastrar"
+export function EntrarOuCadastrar({ soEntrar = false }) {
+  // "entrar", "cadastrar" ou "esqueci"
+  const [modo, setModo] = useState("entrar");
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState("");
+  const [aviso, setAviso] = useState("");
 
   async function enviar(evento) {
     evento.preventDefault();
     setEnviando(true);
     setErro("");
+    setAviso("");
 
-    const { error } =
-      modo === "entrar"
-        ? await supabase.auth.signInWithPassword({ email, password: senha })
-        : await supabase.auth.signUp({
-            email,
-            password: senha,
-            // vai pro raw_user_meta_data, e o gatilho do banco cria o perfil
-            options: { data: { nome: nome.trim(), telefone: telefone.trim() } },
-          });
+    let resultado;
 
-    // Se deu certo, o App fica sabendo sozinho (onAuthStateChange)
+    if (modo === "entrar") {
+      resultado = await supabase.auth.signInWithPassword({ email, password: senha });
+    } else if (modo === "cadastrar") {
+      resultado = await supabase.auth.signUp({
+        email,
+        password: senha,
+        // vai pro raw_user_meta_data, e o gatilho do banco cria o perfil
+        options: { data: { nome: nome.trim(), telefone: telefone.trim() } },
+      });
+    } else {
+      // Manda um e-mail com link. Ao clicar, a cliente volta pro site
+      // e o App abre a tela de "Nova senha".
+      resultado = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/`,
+      });
+      if (!resultado.error) {
+        setAviso(
+          "Se existir uma conta com esse e-mail, enviamos um link pra criar uma senha nova. Confira também a caixa de spam.",
+        );
+      }
+    }
+
+    // Se entrou ou cadastrou, o App fica sabendo sozinho (onAuthStateChange)
     // e esta tela troca pra "Minha conta".
-    if (error) setErro(traduzirErro(error.message));
+    if (resultado.error) setErro(traduzirErro(resultado.error.message));
     setEnviando(false);
   }
 
   function trocarModo(novo) {
     setModo(novo);
     setErro("");
+    setAviso("");
   }
+
+  let explicacao = "Entre pra acompanhar seus pedidos.";
+  if (modo === "cadastrar")
+    explicacao = "Com uma conta, seus pedidos ficam salvos em qualquer celular.";
+  if (modo === "esqueci")
+    explicacao = "Digite o e-mail da sua conta que a gente manda um link pra criar uma senha nova.";
+
+  let textoBotao = "Entrar";
+  if (modo === "cadastrar") textoBotao = "Criar conta";
+  if (modo === "esqueci") textoBotao = "Enviar link";
 
   return (
     <div className="conta-secao">
-      <div className="conta-abas" role="tablist">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={modo === "entrar"}
-          className={modo === "entrar" ? "ativa" : ""}
-          onClick={() => trocarModo("entrar")}
-        >
-          Entrar
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={modo === "cadastrar"}
-          className={modo === "cadastrar" ? "ativa" : ""}
-          onClick={() => trocarModo("cadastrar")}
-        >
-          Criar conta
-        </button>
-      </div>
+      {!soEntrar && modo !== "esqueci" && (
+        <div className="conta-abas" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={modo === "entrar"}
+            className={modo === "entrar" ? "ativa" : ""}
+            onClick={() => trocarModo("entrar")}
+          >
+            Entrar
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={modo === "cadastrar"}
+            className={modo === "cadastrar" ? "ativa" : ""}
+            onClick={() => trocarModo("cadastrar")}
+          >
+            Criar conta
+          </button>
+        </div>
+      )}
 
-      <p className="conta-explica">
-        {modo === "entrar"
-          ? "Entre pra acompanhar seus pedidos."
-          : "Com uma conta, seus pedidos ficam salvos em qualquer celular."}
-      </p>
+      <p className="conta-explica">{explicacao}</p>
 
       <form className="conta-form" onSubmit={enviar}>
         {modo === "cadastrar" && (
@@ -172,26 +210,100 @@ function EntrarOuCadastrar() {
           />
         </label>
 
+        {modo !== "esqueci" && (
+          <label>
+            Senha
+            <input
+              type="password"
+              autoComplete={modo === "entrar" ? "current-password" : "new-password"}
+              minLength={6}
+              required
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
+          </label>
+        )}
+
+        {modo === "cadastrar" && (
+          <p className="conta-termos">
+            Ao criar sua conta, você concorda com a nossa{" "}
+            <a href="/privacidade" target="_blank" rel="noreferrer">
+              Política de Privacidade
+            </a>
+            .
+          </p>
+        )}
+
+        {erro && <p className="conta-erro">{erro}</p>}
+        {aviso && <p className="conta-aviso">{aviso}</p>}
+
+        <button type="submit" className="conta-botao" disabled={enviando}>
+          {enviando ? "Aguarde..." : textoBotao}
+        </button>
+
+        {modo === "entrar" && (
+          <button
+            type="button"
+            className="conta-link"
+            onClick={() => trocarModo("esqueci")}
+          >
+            Esqueci minha senha
+          </button>
+        )}
+        {modo === "esqueci" && (
+          <button
+            type="button"
+            className="conta-link"
+            onClick={() => trocarModo("entrar")}
+          >
+            Voltar pra entrar
+          </button>
+        )}
+      </form>
+    </div>
+  );
+}
+
+// ---------- Criar senha nova (depois de clicar no link do e-mail) ----------
+
+function NovaSenha({ onPronto }) {
+  const [senha, setSenha] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
+
+  async function salvar(evento) {
+    evento.preventDefault();
+    setEnviando(true);
+    setErro("");
+
+    const { error } = await supabase.auth.updateUser({ password: senha });
+
+    if (error) {
+      setErro(traduzirErro(error.message));
+      setEnviando(false);
+    } else {
+      onPronto();
+    }
+  }
+
+  return (
+    <div className="conta-secao">
+      <p className="conta-explica">Escolha uma senha nova pra sua conta.</p>
+      <form className="conta-form" onSubmit={salvar}>
         <label>
-          Senha
+          Senha nova
           <input
             type="password"
-            autoComplete={modo === "entrar" ? "current-password" : "new-password"}
+            autoComplete="new-password"
             minLength={6}
             required
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
           />
         </label>
-
         {erro && <p className="conta-erro">{erro}</p>}
-
         <button type="submit" className="conta-botao" disabled={enviando}>
-          {enviando
-            ? "Aguarde..."
-            : modo === "entrar"
-              ? "Entrar"
-              : "Criar conta"}
+          {enviando ? "Salvando..." : "Salvar senha nova"}
         </button>
       </form>
     </div>
@@ -223,6 +335,7 @@ function AreaDaCliente({ usuario, aberto, onFechar }) {
           "id, numero, itens, subtotal, desconto, frete, total, cupom, status, recebimento, pagamento, criado_em",
         )
         .eq("cliente_id", usuario.id)
+        .eq("oculto_cliente", false) // os que ela excluiu não aparecem
         .order("criado_em", { ascending: false });
 
       if (error) {
@@ -306,7 +419,17 @@ function AreaDaCliente({ usuario, aberto, onFechar }) {
                   </span>
                 </button>
 
-                {detalhes && <DetalhesPedido pedido={pedido} onFechar={onFechar} />}
+                {detalhes && (
+                  <DetalhesPedido
+                    pedido={pedido}
+                    onFechar={onFechar}
+                    onExcluido={() =>
+                      setPedidos((atuais) =>
+                        atuais.filter((p) => p.id !== pedido.id),
+                      )
+                    }
+                  />
+                )}
               </li>
             );
           })}
@@ -318,9 +441,38 @@ function AreaDaCliente({ usuario, aberto, onFechar }) {
 
 // ---------- Detalhes de um pedido ----------
 
-function DetalhesPedido({ pedido, onFechar }) {
+function DetalhesPedido({ pedido, onFechar, onExcluido }) {
   const [pagando, setPagando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
   const [erro, setErro] = useState("");
+
+  // Só dá pra excluir o que ainda não foi pago
+  const podeExcluir = ["aguardando_pagamento", "combinar_whatsapp"].includes(
+    pedido.status,
+  );
+
+  async function excluir() {
+    const certeza = window.confirm(
+      `Excluir o pedido nº ${pedido.numero}? Ele vai sumir da sua lista.`,
+    );
+    if (!certeza) return;
+
+    setExcluindo(true);
+    setErro("");
+
+    // Função do banco: só deixa excluir pedido DELA e que não foi pago
+    const { error } = await supabase.rpc("cancelar_meu_pedido", {
+      p_numero: pedido.numero,
+    });
+
+    if (error) {
+      console.error(error);
+      setErro("Não foi possível excluir. Se você já pagou, fale com a gente no WhatsApp.");
+      setExcluindo(false);
+    } else {
+      onExcluido();
+    }
+  }
 
   const frete = pedido.frete === null ? null : Number(pedido.frete);
   const mensagem = `Olá! Quero falar sobre o meu pedido nº ${pedido.numero}.`;
@@ -440,6 +592,17 @@ function DetalhesPedido({ pedido, onFechar }) {
         >
           Continuar comprando
         </button>
+
+        {podeExcluir && (
+          <button
+            type="button"
+            className="conta-detalhes-excluir"
+            onClick={excluir}
+            disabled={excluindo}
+          >
+            {excluindo ? "Excluindo..." : "Excluir pedido"}
+          </button>
+        )}
       </div>
     </div>
   );

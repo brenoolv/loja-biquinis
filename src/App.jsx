@@ -27,6 +27,7 @@ export default function App() {
   // ---------- Conta da cliente ----------
   const [usuario, setUsuario] = useState(null); // null = não entrou
   const [contaAberta, setContaAberta] = useState(false);
+  const [recuperandoSenha, setRecuperandoSenha] = useState(false);
 
   // Ao abrir o site, pergunta ao Supabase se já tem alguém logado
   // (a sessão fica guardada no navegador) e fica ouvindo quando a
@@ -36,8 +37,14 @@ export default function App() {
       setUsuario(data.session?.user ?? null);
     });
 
-    const { data } = supabase.auth.onAuthStateChange((_evento, sessao) => {
+    const { data } = supabase.auth.onAuthStateChange((evento, sessao) => {
       setUsuario(sessao?.user ?? null);
+
+      // A cliente clicou no link de "esqueci minha senha" do e-mail
+      if (evento === "PASSWORD_RECOVERY") {
+        setRecuperandoSenha(true);
+        setContaAberta(true);
+      }
     });
 
     // Quando o App sai da tela, para de ouvir
@@ -128,6 +135,8 @@ export default function App() {
         aberto={contaAberta}
         onFechar={() => setContaAberta(false)}
         usuario={usuario}
+        recuperandoSenha={recuperandoSenha}
+        onSenhaTrocada={() => setRecuperandoSenha(false)}
       />
       {retornoPagamento && (
         <AvisoPagamento

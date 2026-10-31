@@ -3,8 +3,7 @@ import { FaWhatsapp } from "react-icons/fa";
 import { FiShoppingBag, FiCheck } from "react-icons/fi";
 import { formatarPreco } from "../utils/formatarPreco";
 import { WHATSAPP } from "../utils/loja";
-
-const tamanhos = ["P", "M", "G", "GG"];
+import { TAMANHOS as tamanhos } from "../dados/produtos";
 
 // estoque: { P: 3, M: 0, ... } vindo do banco, ou null enquanto carrega.
 // Sem estoque carregado, nada fica bloqueado (a loja continua vendendo).
