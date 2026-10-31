@@ -34,14 +34,3 @@ export const PRODUTOS = [
     cor: "var(--agua)",
   },
 ];
-
-// Produto de R$ 1,00 só pra testar o pagamento de verdade.
-// Só aparece abrindo o site com ?teste no endereço (ex.: oceamar.netlify.app/?teste).
-// A cliente comum nunca vê. Pode apagar depois dos testes.
-export const PRODUTO_TESTE = {
-  id: 999,
-  nome: "Produto de teste",
-  preco: 1.0,
-  foto: "/fotos/floral-azul.jpeg",
-  cor: "var(--agua)",
-};

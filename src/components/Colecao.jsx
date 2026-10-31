@@ -2,12 +2,10 @@ import "./Colecao.css";
 import { useState, useEffect } from "react";
 import ProdutoCard from "./ProdutoCard";
 import { supabase } from "../utils/supabase";
-import { PRODUTOS, PRODUTO_TESTE } from "../dados/produtos";
-
-const modoTeste = new URLSearchParams(window.location.search).has("teste");
+import { PRODUTOS } from "../dados/produtos";
 
 export default function Colecao({ onAdicionar, onComprar }) {
-  const lista = modoTeste ? [PRODUTO_TESTE, ...PRODUTOS] : PRODUTOS;
+  const lista = PRODUTOS;
 
   // Estoque de todos os produtos, organizado assim: { 1: { P: 3, M: 0 }, 2: {...} }
   // null = ainda carregando (ou deu erro): aí nada fica bloqueado.

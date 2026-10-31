@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { supabase } from "../utils/supabase";
 import { formatarPreco } from "../utils/formatarPreco";
-import { PRODUTOS, PRODUTO_TESTE, TAMANHOS } from "../dados/produtos";
+import { PRODUTOS, TAMANHOS } from "../dados/produtos";
 import { EntrarOuCadastrar } from "./Conta";
 import "./Conta.css";
 import "./Admin.css";
@@ -545,7 +545,7 @@ function PainelEstoque() {
   const [salvo, setSalvo] = useState(null); // id do produto que acabou de salvar
   const [erro, setErro] = useState("");
 
-  const produtos = [...PRODUTOS, PRODUTO_TESTE];
+  const produtos = PRODUTOS;
 
   useEffect(() => {
     async function buscar() {
