@@ -1,5 +1,5 @@
 import "./Footer.css";
-import { WHATSAPP } from "../utils/loja";
+import { WHATSAPP, VENDEDORA, DOCUMENTO, CIDADE, EMAIL_LOJA } from "../utils/loja";
 
 export default function Footer() {
   const ano = new Date().getFullYear();
@@ -55,6 +55,9 @@ export default function Footer() {
 
       <div className="rodape-base">
         <p>© {ano} Oceamar. Todos os direitos reservados.</p>
+        <p className="rodape-vendedora">
+          {VENDEDORA} · {DOCUMENTO} · {CIDADE} · {EMAIL_LOJA}
+        </p>
         <p>Emoji animado: Noto Emoji, Google (CC BY 4.0)</p>
       </div>
     </footer>

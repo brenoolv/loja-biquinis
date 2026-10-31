@@ -4,6 +4,13 @@ export const WHATSAPP = "558894649311";
 export const CUPOM = "BEMVINDA10";
 export const DESCONTO = 0.1; // 10%
 
+// Quem vende (a lei de comércio eletrônico pede nome e CPF ou CNPJ no site).
+// Quando abrir o MEI, troque o CPF pelo CNPJ e o nome pelo nome da empresa.
+export const VENDEDORA = "Agatha Miscila dos Santos";
+export const DOCUMENTO = "CPF 038.159.523-44";
+export const CIDADE = "Fortaleza, CE";
+export const EMAIL_LOJA = "oceamar.loja@gmail.com";
+
 // Endereço do site no ar. A InfinitePay avisa os pagamentos aprovados aqui.
 // Quando o oceamar.com.br estiver funcionando, troque por ele.
 export const SITE_URL = "https://oceamar.netlify.app";

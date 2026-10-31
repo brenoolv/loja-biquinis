@@ -1,8 +1,7 @@
-import { WHATSAPP } from "../utils/loja";
+import { WHATSAPP, VENDEDORA, DOCUMENTO, CIDADE, EMAIL_LOJA } from "../utils/loja";
 import "./Privacidade.css";
 
-// Página /privacidade. Texto base: revise e complete com os dados da loja
-// (nome completo ou razão social e CPF/CNPJ) antes de considerar final.
+// Página /privacidade. Os dados de quem vende vêm do utils/loja.js.
 export default function Privacidade() {
   return (
     <main className="privacidade">
@@ -14,10 +13,13 @@ export default function Privacidade() {
       <p className="privacidade-data">Atualizada em 31 de outubro de 2026</p>
 
       <p>
-        Esta política explica quais dados a Oceamar Moda Praia, de Fortaleza
-        (CE), coleta quando você usa o nosso site, para que usamos e quais são
-        os seus direitos, de acordo com a Lei Geral de Proteção de Dados (Lei
-        nº 13.709/2018).
+        Esta política explica quais dados a Oceamar Moda Praia coleta quando
+        você usa o nosso site, para que usamos e quais são os seus direitos, de
+        acordo com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
+      </p>
+      <p>
+        Responsável pelos dados: <strong>{VENDEDORA}</strong>, {DOCUMENTO},{" "}
+        {CIDADE}.
       </p>
 
       <h2>Quais dados coletamos</h2>
@@ -91,7 +93,7 @@ export default function Privacidade() {
       <h2>Contato</h2>
       <p>
         E-mail:{" "}
-        <a href="mailto:oceamar.loja@gmail.com">oceamar.loja@gmail.com</a>
+        <a href={`mailto:${EMAIL_LOJA}`}>{EMAIL_LOJA}</a>
         <br />
         WhatsApp:{" "}
         <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer">
