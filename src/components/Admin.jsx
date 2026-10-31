@@ -177,6 +177,37 @@ function linkWhatsApp(telefone) {
   return numeros.length >= 12 ? `https://wa.me/${numeros}` : null;
 }
 
+// Deixa o telefone num formato só, pra comparar: "5585999990000" e
+// "(85) 99999-0000" viram os dois "85999990000"
+function telefoneLimpo(telefone) {
+  let numeros = (telefone ?? "").replace(/\D/g, "");
+  if (numeros.startsWith("55") && numeros.length >= 12)
+    numeros = numeros.slice(2);
+  return numeros.length >= 10 ? numeros : null;
+}
+
+// Procura um pedido mais antigo, com cupom, da mesma pessoa
+// (mesma conta ou mesmo telefone). Pedidos cancelados não contam.
+function cupomUsadoAntes(pedido, pedidos, clientes) {
+  if (!pedido.cupom) return null;
+
+  const telefoneDe = (p) =>
+    telefoneLimpo(clientes[p.cliente_id]?.telefone || p.telefone_cliente);
+  const telefone = telefoneDe(pedido);
+
+  return (
+    pedidos.find(
+      (outro) =>
+        outro.id !== pedido.id &&
+        outro.cupom &&
+        outro.status !== "cancelado" &&
+        new Date(outro.criado_em) < new Date(pedido.criado_em) &&
+        ((pedido.cliente_id && outro.cliente_id === pedido.cliente_id) ||
+          (telefone && telefoneDe(outro) === telefone)),
+    ) ?? null
+  );
+}
+
 function PainelPedidos() {
   const [pedidos, setPedidos] = useState([]);
   const [clientes, setClientes] = useState({}); // { id: { nome, telefone, email } }
@@ -226,7 +257,9 @@ function PainelPedidos() {
     <section>
       <div className="admin-filtros">
         {Object.entries(FILTROS).map(([chave, f]) => {
-          const quantos = pedidos.filter((p) => f.status.includes(p.status)).length;
+          const quantos = pedidos.filter((p) =>
+            f.status.includes(p.status),
+          ).length;
           return (
             <button
               key={chave}
@@ -255,6 +288,7 @@ function PainelPedidos() {
             key={pedido.id}
             pedido={pedido}
             cliente={pedido.cliente_id ? clientes[pedido.cliente_id] : null}
+            cupomRepetido={cupomUsadoAntes(pedido, pedidos, clientes)}
             onMudou={buscar}
           />
         ))}
@@ -263,7 +297,7 @@ function PainelPedidos() {
   );
 }
 
-function CartaoPedido({ pedido, cliente, onMudou }) {
+function CartaoPedido({ pedido, cliente, cupomRepetido, onMudou }) {
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -301,7 +335,8 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
   }
 
   function marcarPago() {
-    if (!window.confirm(`Confirmar que o pedido nº ${pedido.numero} foi pago?`)) return;
+    if (!window.confirm(`Confirmar que o pedido nº ${pedido.numero} foi pago?`))
+      return;
     // Mesma função que o pagamento automático usa: marca pago e desconta o estoque
     return executar(() =>
       supabase.rpc("marcar_pedido_pago", { p_numero: pedido.numero }),
@@ -346,6 +381,13 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
         </span>
       </div>
 
+      {cupomRepetido && (
+        <p className="admin-alerta">
+          Esse cliente já usou o cupom {pedido.cupom} no pedido nº{" "}
+          {cupomRepetido.numero}. O desconto vale só na primeira compra.
+        </p>
+      )}
+
       <div className="admin-cliente">
         {cliente ? (
           <>
@@ -365,7 +407,12 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
           <span className="admin-sem-conta">Comprou sem conta</span>
         )}
         {whatsapp && (
-          <a href={whatsapp} target="_blank" rel="noreferrer" className="admin-zap">
+          <a
+            href={whatsapp}
+            target="_blank"
+            rel="noreferrer"
+            className="admin-zap"
+          >
             <FaWhatsapp /> Chamar
           </a>
         )}
@@ -391,7 +438,11 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
         )}
         <span>
           Frete:{" "}
-          {frete === null ? "a combinar" : frete === 0 ? "grátis" : formatarPreco(frete)}
+          {frete === null
+            ? "a combinar"
+            : frete === 0
+              ? "grátis"
+              : formatarPreco(frete)}
         </span>
         <strong>Total: {formatarPreco(Number(pedido.total))}</strong>
       </div>
@@ -412,8 +463,15 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
       {erro && <p className="conta-erro">{erro}</p>}
 
       <div className="admin-acoes">
-        {["aguardando_pagamento", "combinar_whatsapp"].includes(pedido.status) && (
-          <button type="button" className="principal" disabled={ocupado} onClick={marcarPago}>
+        {["aguardando_pagamento", "combinar_whatsapp"].includes(
+          pedido.status,
+        ) && (
+          <button
+            type="button"
+            className="principal"
+            disabled={ocupado}
+            onClick={marcarPago}
+          >
             Marcar como pago
           </button>
         )}
@@ -437,10 +495,18 @@ function CartaoPedido({ pedido, cliente, onMudou }) {
             Marcar como entregue
           </button>
         )}
-        {["aguardando_pagamento", "combinar_whatsapp", "pago", "enviado"].includes(
-          pedido.status,
-        ) && (
-          <button type="button" className="perigo" disabled={ocupado} onClick={cancelar}>
+        {[
+          "aguardando_pagamento",
+          "combinar_whatsapp",
+          "pago",
+          "enviado",
+        ].includes(pedido.status) && (
+          <button
+            type="button"
+            className="perigo"
+            disabled={ocupado}
+            onClick={cancelar}
+          >
             Cancelar
           </button>
         )}
