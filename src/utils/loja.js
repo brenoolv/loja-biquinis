@@ -25,5 +25,5 @@ export const SITE_URL = "https://oceamar.com.br";
 export const INFINITE_TAG = "oceamar";
 
 // CEP de onde as entregas saem (só números). O frete é medido a partir dele.
-// TEMPORÁRIO (Rua São Luís, Henrique Jorge). Troque quando a loja mudar.
+// Troque quando a loja mudar de endereço.
 export const CEP_LOJA = "60521082";
