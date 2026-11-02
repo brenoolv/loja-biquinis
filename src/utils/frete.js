@@ -1,13 +1,6 @@
 import { CEP_LOJA } from "./loja";
-
-// ---------- Tabela de frete por distância ----------
-// "ate" é em km (linha reta da loja até o CEP da cliente).
-// A primeira faixa que couber é a que vale.
-const FAIXAS = [
-  { ate: 3, valor: 0 },
-  { ate: 5, valor: 8 },
-  { ate: 8, valor: 10 },
-];
+// A tabela de faixas mora em dados/faixasFrete.js (a função de pagamento também usa)
+import { FAIXAS } from "../dados/faixasFrete";
 
 export const DISTANCIA_MAXIMA = FAIXAS[FAIXAS.length - 1].ate;
 
