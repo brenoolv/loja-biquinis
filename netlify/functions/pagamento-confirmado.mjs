@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 // Mesma lista de produtos do site: é daqui que sai o preço "de verdade"
 import { PRODUTOS } from "../../src/dados/produtos.js";
+// Valores de frete que o site realmente cobra (0, 8, 10...)
+import { VALORES_FRETE } from "../../src/dados/faixasFrete.js";
 
 // =====================================================================
 // Função que roda no servidor do Netlify (não no navegador da cliente).
@@ -37,15 +39,33 @@ function conferirValor(pedido, valorCobrado) {
     return "Não deu pra conferir o valor. Confira o valor recebido no app da InfinitePay.";
   }
 
+  if (!Array.isArray(pedido.itens) || pedido.itens.length === 0) {
+    return "Pedido sem peças. Não envie antes de conferir.";
+  }
+
   let pecas = 0;
   for (const item of pedido.itens) {
     const produto = PRODUTOS.find((p) => p.id === Number(item.produto_id));
     if (!produto) return `Produto desconhecido no pedido (id ${item.produto_id}).`;
-    pecas += produto.preco * Number(item.quantidade);
+
+    // Quantidade negativa ou quebrada diminuiria o "esperado" lá embaixo:
+    // 1 peça de R$ 50 + (-1) peça de R$ 50 daria R$ 0 esperado.
+    const quantidade = Number(item.quantidade);
+    if (!Number.isInteger(quantidade) || quantidade < 1) {
+      return `Quantidade inválida no pedido (${item.quantidade}x ${produto.nome}). Não envie antes de conferir.`;
+    }
+    pecas += produto.preco * quantidade;
+  }
+
+  // O frete também vem do navegador. Um frete negativo abaixaria o valor
+  // esperado, então só aceitamos os valores que o site cobra de verdade.
+  const frete = Number(pedido.frete ?? 0);
+  if (!VALORES_FRETE.includes(frete)) {
+    return `Frete de ${reais(frete)} não existe na tabela da loja. Não envie antes de conferir.`;
   }
 
   // Pagamento online nunca tem cupom (cupom é só pelo WhatsApp)
-  const esperado = pecas + Number(pedido.frete ?? 0);
+  const esperado = pecas + frete;
 
   // 1 centavo de folga por causa de arredondamento
   if (valorCobrado + 0.01 < esperado) {
@@ -55,6 +75,23 @@ function conferirValor(pedido, valorCobrado) {
     return `Pedido com cupom ${pedido.cupom} pago online. Confira se o desconto era válido.`;
   }
   return null;
+}
+
+// O link do comprovante chega no corpo da requisição, e a tela de
+// "Obrigada" pega ele do endereço da página, que qualquer pessoa pode editar.
+// Como a Agatha clica nesse link pelo painel, só aceitamos endereços da
+// própria InfinitePay. Qualquer outro vira null (sem link no painel).
+function comprovanteConfiavel(url) {
+  if (typeof url !== "string") return null;
+  try {
+    const endereco = new URL(url);
+    const dominio = endereco.hostname;
+    const daInfinitePay =
+      dominio === "infinitepay.io" || dominio.endsWith(".infinitepay.io");
+    return endereco.protocol === "https:" && daInfinitePay ? url : null;
+  } catch {
+    return null;
+  }
 }
 
 function resposta(status, corpo) {
@@ -139,7 +176,7 @@ export default async (req) => {
   const { error } = await supabase.rpc("marcar_pedido_pago", {
     p_numero: numero,
     p_transacao: transacao,
-    p_comprovante: dados.receipt_url ?? null,
+    p_comprovante: comprovanteConfiavel(dados.receipt_url),
     p_valor_pago: valorPago,
     p_alerta: alerta,
   });
