@@ -30,7 +30,8 @@
   color: var(--mar);
 }
 
-.privacidade ul {
+.privacidade ul,
+.privacidade ol {
   padding-left: 20px;
 }
 

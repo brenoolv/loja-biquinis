@@ -43,6 +43,7 @@ export default function Footer() {
           <h3>Navegue</h3>
           <a href="#inicio">Início</a>
           <a href="#colecao">Coleção</a>
+          <a href="/trocas">Trocas e devoluções</a>
           <a href="/privacidade">Política de Privacidade</a>
         </nav>
 

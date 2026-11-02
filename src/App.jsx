@@ -8,12 +8,38 @@ import AvisoPagamento, { lerRetornoPagamento } from "./components/AvisoPagamento
 import Conta from "./components/Conta";
 import { supabase } from "./utils/supabase";
 import { useState, useEffect } from "react";
+import { PRODUTOS, TAMANHOS } from "./dados/produtos";
+
+// O carrinho fica guardado no aparelho e pode estar velho (preço que mudou,
+// peça que saiu da loja) ou ter sido mexido à mão. Aqui ele é refeito a
+// partir da lista oficial: o preço, o nome e a foto sempre vêm de PRODUTOS.
+function atualizarCarrinho(salvo) {
+  if (!Array.isArray(salvo)) return [];
+
+  return salvo.flatMap((item) => {
+    const produto = PRODUTOS.find((p) => p.id === item.id);
+    const quantidade = Math.floor(Number(item.quantidade));
+    if (!produto || !TAMANHOS.includes(item.tamanho) || !(quantidade > 0)) {
+      return []; // some do carrinho
+    }
+    return [
+      {
+        id: produto.id,
+        nome: produto.nome,
+        preco: produto.preco,
+        foto: produto.foto,
+        tamanho: item.tamanho,
+        quantidade,
+      },
+    ];
+  });
+}
 
 export default function App() {
   const [carrinho, setCarrinho] = useState(() => {
     try {
       const salvo = localStorage.getItem("carrinho");
-      return salvo ? JSON.parse(salvo) : [];
+      return salvo ? atualizarCarrinho(JSON.parse(salvo)) : [];
     } catch {
       return [];
     }

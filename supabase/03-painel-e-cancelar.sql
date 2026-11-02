@@ -89,6 +89,8 @@ begin
     raise exception 'pedido % não encontrado', p_numero;
   end if;
 
+  
+
   if not v_pedido.estoque_baixado then
     for v_item in select * from jsonb_array_elements(v_pedido.itens) loop
       update public.estoque

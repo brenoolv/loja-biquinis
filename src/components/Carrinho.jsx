@@ -211,6 +211,18 @@ export default function Carrinho({
     try {
       const numeroPedido = String(Date.now());
 
+      // 1. Registra o pedido no banco ANTES de ir pro pagamento.
+      // Sem isso, o aviso da InfinitePay chegaria e não acharia o pedido.
+      const salvou = await salvarPedido(numeroPedido, "aguardando_pagamento");
+      if (!salvou) {
+        setErroPagamento(
+          "Não conseguimos registrar seu pedido agora. Finalize pelo WhatsApp que a gente te atende.",
+        );
+        setPagando(false);
+        return;
+      }
+
+      // 2. Cria o link de pagamento
       const link = await criarLinkPagamento({
         numero: numeroPedido,
         itens,
@@ -231,9 +243,6 @@ export default function Carrinho({
         total,
         entrega: textoRecebimento,
       });
-
-      // Registra o pedido no banco. Se falhar, a venda continua mesmo assim.
-      await salvarPedido(numeroPedido, "aguardando_pagamento");
 
       window.location.href = link;
     } catch (erro) {
@@ -324,6 +333,7 @@ export default function Carrinho({
     });
 
     if (error) console.error("Não salvou o pedido no banco:", error);
+    return !error; // true = salvou
   }
 
   // Abre o WhatsApp na hora (o navegador bloqueia se esperar o banco)

@@ -23,14 +23,29 @@ const STATUS = {
   cancelado: "Cancelado",
 };
 
+// Pedido não pago há mais de 2 dias: a cliente provavelmente desistiu.
+// Sai de "Em aberto" pra não misturar com o que precisa ser enviado.
+const DOIS_DIAS = 2 * 24 * 60 * 60 * 1000;
+const NAO_PAGOS = ["aguardando_pagamento", "combinar_whatsapp"];
+
+function parado(pedido) {
+  return (
+    NAO_PAGOS.includes(pedido.status) &&
+    Date.now() - new Date(pedido.criado_em).getTime() > DOIS_DIAS
+  );
+}
+
+// Cada filtro é uma função que diz se o pedido aparece nele
 const FILTROS = {
   abertos: {
     nome: "Em aberto",
-    status: ["aguardando_pagamento", "combinar_whatsapp", "pago", "enviado"],
+    mostra: (p) =>
+      [...NAO_PAGOS, "pago", "enviado"].includes(p.status) && !parado(p),
   },
-  entregues: { nome: "Entregues", status: ["entregue"] },
-  cancelados: { nome: "Cancelados", status: ["cancelado"] },
-  todos: { nome: "Todos", status: Object.keys(STATUS) },
+  parados: { nome: "Parados", mostra: parado },
+  entregues: { nome: "Entregues", mostra: (p) => p.status === "entregue" },
+  cancelados: { nome: "Cancelados", mostra: (p) => p.status === "cancelado" },
+  todos: { nome: "Todos", mostra: () => true },
 };
 
 export default function Admin() {
@@ -265,7 +280,7 @@ function PainelPedidos() {
   }
 
   const visiveis = pedidos.filter((p) =>
-    FILTROS[filtro].status.includes(p.status),
+    FILTROS[filtro].mostra(p),
   );
 
   return (
@@ -273,7 +288,7 @@ function PainelPedidos() {
       <div className="admin-filtros">
         {Object.entries(FILTROS).map(([chave, f]) => {
           const quantos = pedidos.filter((p) =>
-            f.status.includes(p.status),
+            f.mostra(p),
           ).length;
           return (
             <button
@@ -395,6 +410,12 @@ function CartaoPedido({ pedido, cliente, cupomRepetido, onMudou }) {
           {STATUS[pedido.status] ?? pedido.status}
         </span>
       </div>
+
+      {/* Alerta gravado na hora do pagamento: valor menor que o preço
+          das peças ou estoque que não era suficiente */}
+      {pedido.alerta && (
+        <p className="admin-alerta admin-alerta--grave">{pedido.alerta}</p>
+      )}
 
       {cupomRepetido && (
         <p className="admin-alerta">

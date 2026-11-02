@@ -172,6 +172,12 @@
   font-weight: 600;
 }
 
+.admin-alerta--grave {
+  border-left-color: #b91c1c;
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
 .admin-cliente {
   display: flex;
   flex-wrap: wrap;
